@@ -7,6 +7,8 @@ our sub MAIN-handler(@module, :$png) is export {
     use Zef::Client;
     use Zef::Config;
 
+    $*ERR.out-buffer = False;
+
     my $chosen-config-file = %*ENV<ZEF_CONFIG_PATH> // Zef::Config::guess-path();
     my $config = Zef::Config::parse-file($chosen-config-file);
 
@@ -22,7 +24,6 @@ our sub MAIN-handler(@module, :$png) is export {
         for @copy -> $module {
             next if %deps{$module}:exists;
 
-            note "# PACKAGE: $module";
             my $candidates = $zef.find-candidates($module).head;
             my $deps = $zef.list-dependencies($candidates).map(*.identity).cache;
             %deps{$module} = $deps;
